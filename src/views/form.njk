@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Submit Configuration</title>
+  </head>
+  <body>
+    <h1>Submit Configuration</h1>
+
+    <!-- Generator Selection -->
+    <label for="generator">Select Generator:</label>
+    <select id="generator" name="generator">
+      {% for generator in generators %}
+      <option value="{{ generator }}" {% if loop.first %}selected{% endif %}>
+        {{ generator.charAt(0) | upper }}{{ generator | slice(1) }}
+      </option>
+      {% endfor %}
+    </select>
+
+    <!-- Dynamic Form Fields -->
+    <form id="config-form">
+      <div id="dynamic-fields"></div>
+      <button type="submit">Submit</button>
+    </form>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const generatorSelect = document.getElementById('generator');
+        const formContainer = document.getElementById('dynamic-fields');
+        const form = document.getElementById('config-form');
+
+        function loadFormFields(generator) {
+          const fieldsUrl = '{{ _route(route.FORM_FIELDS, { generator: "__GEN__" }) }}'.replace('__GEN__', generator);
+
+          fetch(fieldsUrl)
+            .then((response) => response.json())
+            .then((fields) => {
+              formContainer.innerHTML = ''; // Clear previous fields
+
+              fields.forEach((field) => {
+                const label = document.createElement('label');
+                label.textContent = field.label;
+                label.setAttribute('for', field.name);
+
+                let input;
+
+                if (field.type === 'select') {
+                  input = document.createElement('select');
+                  input.name = field.name;
+
+                  field.options.forEach((option) => {
+                    const optionElement = document.createElement('option');
+                    optionElement.value = option.value;
+                    optionElement.textContent = option.label;
+                    input.appendChild(optionElement);
+                  });
+                } else {
+                  input = document.createElement('input');
+                  input.type = field.type || 'text';
+                  input.name = field.name;
+                  input.required = field.required || false;
+                }
+
+                formContainer.appendChild(label);
+                formContainer.appendChild(input);
+              });
+            });
+        }
+
+        // Initial form fields for the default selected generator
+        loadFormFields(generatorSelect.value);
+
+        // Handle generator selection change
+        generatorSelect.addEventListener('change', function () {
+          loadFormFields(this.value);
+        });
+
+        // Handle form submission
+        form.addEventListener('submit', function (event) {
+          event.preventDefault();
+
+          const formData = new FormData(form);
+          const data = {};
+          formData.forEach((value, key) => {
+            data[key] = value;
+          });
+
+          const submitUrl = '{{ _route(route.SUBMIT_FORM, { generator: "__GEN__" }) }}'.replace(
+            '__GEN__',
+            generatorSelect.value
+          );
+
+          fetch(submitUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+          })
+            .then((response) => response.json())
+            .then((result) => {
+              if (result.redirectUrl) {
+                window.location.href = result.redirectUrl;
+              }
+            });
+        });
+      });
+    </script>
+  </body>
+</html>

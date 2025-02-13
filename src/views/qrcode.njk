@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        .container {
+            max-width: 500px;
+            margin: auto;
+        }
+        img {
+            margin: 20px 0;
+        }
+        .url-box {
+            background: #f3f3f3;
+            padding: 10px;
+            border-radius: 5px;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Scan QR Code</h1>
+        <p>Scan this QR code with your VoIP application to automatically configure your settings.</p>
+
+        <img src="{{ qrCode }}" alt="QR Code">
+        
+        <p>Or manually copy the configuration URL:</p>
+        <div class="url-box">
+            <code>{{ configUrl }}</code>
+        </div>
+        
+        <p>
+            <a href="{{ configUrl }}" download>
+                <button>Download Configuration</button>
+            </a>
+        </p>
+    </div>
+</body>
+</html>

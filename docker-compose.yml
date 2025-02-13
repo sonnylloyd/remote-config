@@ -1,0 +1,24 @@
+services:
+  app:
+    build: .
+    container_name: sip-remote-config
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "4000:3000"
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:alpine
+    container_name: sip-remote-config-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+volumes:
+  redis-data:
+    driver: local
