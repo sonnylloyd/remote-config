@@ -15,20 +15,27 @@ export class LinphoneGenerator implements IGenerator {
   <config xmlns="http://www.linphone.org/xsds/lpconfig.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.linphone.org/xsds/lpconfig.xsd lpconfig.xsd">
     <section name="sip">
       <entry name="default_proxy" overwrite="true">0</entry>
+      <entry name="transports">${data.udp}</entry>
+      <entry name="contact">sip:${data.username}@${data.domain}</entry>
+      <entry name="outbound_proxy">sip:${data.domain}/entry>
+      <entry name="register_enabled">1</entry>
+      <entry name="expires">3600</entry>
     </section>
     <section name="misc">
       <entry name="transient_provisioning" overwrite="true">1</entry>
     </section>
     <section name="auth_info_0" overwrite="true">
       <entry name="username" overwrite="true">${data.username}</entry>
+      <entry name="userid" overwrite="true">${data.username}</entry>
       <entry name="ha1" overwrite="true">${ha1}</entry>
+      <entry name="passwd">${ha1}</entry>
       <entry name="realm" overwrite="true">${data.domain}</entry>
       <entry name="domain" overwrite="true">${data.domain}</entry>
       <entry name="algorithm" overwrite="true">MD5</entry>
     </section>
   </config>`;
   }
-  
+ 
   getFields(): FormField[] {
     return [
       { name: "username", label: "Username", type: "text", required: true },
