@@ -48,16 +48,14 @@ export class FormController extends BaseController {
         }
       }
 
-      // Generate configuration
-      const config = GeneratorFactory.getGenerator(generatorType).generate(
-        formData,
-      );
-
       // Generate a random key for retrieval
       const key = crypto.randomBytes(16).toString("hex");
 
       // Store data in Redis with expiration (e.g., 10 minutes)
-      await this.storage.set(key, config);
+      await this.storage.set(key, JSON.stringify({
+        generatorType: generatorType,
+        data: { ...formData },
+      }));
 
       // Generate the full URL for config download
       const qrUrl = UrlRoute.make(Routes.QR, { key }, UrlRoute.url(req));

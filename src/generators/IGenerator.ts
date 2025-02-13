@@ -1,6 +1,7 @@
 export interface IGenerator {
   generate(data: Record<string, string>): string;
   getFields(): FormField[]; // Field name -> Expected Type
+  getHeaders(): Record<string, string>;
 }
 
 export type FormField = {
