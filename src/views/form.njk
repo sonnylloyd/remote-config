@@ -24,14 +24,23 @@
       <button type="submit">Submit</button>
     </form>
 
+    <!-- Display QR URL after form submission -->
+    <div id="qr-url-section" style="display: none;">
+      <h3>Configuration QR URL:</h3>
+      <p id="qr-url"></p>
+      <button onclick="copyToClipboard()">Copy URL</button>
+    </div>
+
     <script>
       document.addEventListener('DOMContentLoaded', function () {
         const generatorSelect = document.getElementById('generator');
         const formContainer = document.getElementById('dynamic-fields');
         const form = document.getElementById('config-form');
+        const qrUrlSection = document.getElementById('qr-url-section');
+        const qrUrlElement = document.getElementById('qr-url');
 
         function loadFormFields(generator) {
-          const fieldsUrl = '{{ _route(route.FORM_FIELDS, { generator: "__GEN__" }) }}'.replace('__GEN__', generator);
+          const fieldsUrl = '{{ route.FORM_FIELDS }}'.replace(':generator', generator);
 
           fetch(fieldsUrl)
             .then((response) => response.json())
@@ -86,8 +95,8 @@
             data[key] = value;
           });
 
-          const submitUrl = '{{ _route(route.SUBMIT_FORM, { generator: "__GEN__" }) }}'.replace(
-            '__GEN__',
+          const submitUrl = '{{ route.SUBMIT_FORM }}'.replace(
+            ':generator',
             generatorSelect.value
           );
 
@@ -100,11 +109,25 @@
           })
             .then((response) => response.json())
             .then((result) => {
-              if (result.redirectUrl) {
-                window.location.href = result.redirectUrl;
+              // Show the QR URL section and populate the URL
+              if (result.qr) {
+                qrUrlElement.textContent = result.qr; // Set the QR URL in the element
+                qrUrlSection.style.display = 'block'; // Make the section visible
               }
             });
         });
+
+        // Function to copy the QR URL to the clipboard
+        function copyToClipboard() {
+          const qrUrl = qrUrlElement.textContent;
+          const textArea = document.createElement('textarea');
+          textArea.value = qrUrl;
+          document.body.appendChild(textArea);
+          textArea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textArea);
+          alert('QR URL copied to clipboard!');
+        }
       });
     </script>
   </body>
