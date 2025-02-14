@@ -33,6 +33,9 @@ export class LinphoneGenerator implements IGenerator {
       <entry name="domain" overwrite="true">${data.domain}</entry>
       <entry name="algorithm" overwrite="true">MD5</entry>
     </section>
+    <section name="display_info" overwrite="true">
+      <entry name="display_name" overwrite="true">${data.name || data.username}</entry>
+    </section>
     <section name="proxy_0" overwrite="true">
       <entry name="reg_proxy" overwrite="true">&lt;sip:${data.domain};transport=${data.transport}&gt;</entry>
       <entry name="reg_route" overwrite="true">&lt;sip:${data.domain};transport=${data.transport}&gt;</entry>
@@ -54,6 +57,13 @@ export class LinphoneGenerator implements IGenerator {
  
   getFields(): FormField[] {
     return [
+      { 
+        name: "name", 
+        label: "Display Name", 
+        type: "text", 
+        required: false,
+        hint: "This is the name you would like to display in the app"
+      },
       { 
         name: "username", 
         label: "Username", 
