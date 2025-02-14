@@ -4,7 +4,7 @@ import crypto from "crypto";
 
 export class LinphoneGenerator implements IGenerator {
   generate(data: Record<string, string>): string {
-    const ha1 = crypto.createHash('md5').update(`${data.username}:${data.domain}:${data.password}`).digest('hex');
+    const ha1 = crypto.createHash('md5').update(`${data.username}:${data.realm}:${data.password}`).digest('hex');
   
     return `<?xml version="1.0" encoding="UTF-8"?>
   <config xmlns="http://www.linphone.org/xsds/lpconfig.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.linphone.org/xsds/lpconfig.xsd lpconfig.xsd">
@@ -28,8 +28,8 @@ export class LinphoneGenerator implements IGenerator {
     </section>
     <section name="auth_info_0" overwrite="true">
       <entry name="username" overwrite="true">${data.username}</entry>
-      <entry name="passwd" overwrite="true">${data.password}</entry>
-      <entry name="realm" overwrite="true">${data.domain}</entry>
+      <entry name="ha1" overwrite="true">${ha1}</entry>
+      <entry name="realm" overwrite="true">${data.realm}</entry>
       <entry name="domain" overwrite="true">${data.domain}</entry>
       <entry name="algorithm" overwrite="true">MD5</entry>
     </section>
@@ -54,9 +54,27 @@ export class LinphoneGenerator implements IGenerator {
  
   getFields(): FormField[] {
     return [
-      { name: "username", label: "Username", type: "text", required: true },
-      { name: "password", label: "Password", type: "password", required: true },
-      { name: "domain", label: "Domain", type: "text", required: true },
+      { 
+        name: "username", 
+        label: "Username", 
+        type: "text", 
+        required: true,
+        hint: "This is your SIP username, usually your extension number."
+      },
+      { 
+        name: "password", 
+        label: "Password", 
+        type: "password", 
+        required: true,
+        hint: "Use your SIP password, not your user portal password."
+      },
+      { 
+        name: "domain", 
+        label: "Domain", 
+        type: "text", 
+        required: true,
+        hint: "Enter your SIP server address, e.g., sip.example.com."
+      },
       {
         name: "transport",
         label: "Transport Protocol",
@@ -67,9 +85,21 @@ export class LinphoneGenerator implements IGenerator {
           { value: "tcp", label: "TCP" },
           { value: "tls", label: "TLS" },
         ],
+        defaultValue: "udp",
+        hint: "Choose the transport protocol for SIP communication. UDP is most common."
+      },
+      { 
+        name: "realm", 
+        label: "Realm", 
+        type: "text", 
+        required: true, 
+        defaultValue: "asterisk",
+        hint: "This is usually 'asterisk' for FreePBX and Asterisk-based systems."
       },
     ];
   }
+  
+  
 
   getHeaders(): Record<string, string> {
     return {

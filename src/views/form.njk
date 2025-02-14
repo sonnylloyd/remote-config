@@ -69,8 +69,24 @@
                   input.type = field.type || 'text';
                   input.name = field.name;
                   input.required = field.required || false;
+
+                  // Set default value if available
+                  if (field.defaultValue) {
+                    input.value = field.defaultValue;
+                  }
                 }
 
+                // Add hint text below the field if it exists
+                if (field.hint) {
+                  const hintText = document.createElement('small');
+                  hintText.textContent = field.hint;
+                  hintText.style.display = 'block'; // Make sure the hint is on a new line
+                  hintText.style.color = 'gray';
+                  hintText.style.fontSize = '0.9em';
+                  formContainer.appendChild(hintText);
+                }
+
+                // Append the field label and input to the form container
                 formContainer.appendChild(label);
                 formContainer.appendChild(input);
               });

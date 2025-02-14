@@ -10,4 +10,6 @@ export type FormField = {
   type: "text" | "password" | "select";
   required: boolean;
   options?: { value: string; label: string }[];
+  defaultValue?: string;
+  hint?: string;
 };
