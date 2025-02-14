@@ -17,7 +17,7 @@ export class LinphoneGenerator implements IGenerator {
       <entry name="default_proxy" overwrite="true">0</entry>
       <entry name="transports">${data.udp}</entry>
       <entry name="contact">sip:${data.username}@${data.domain}</entry>
-      <entry name="outbound_proxy">sip:${data.domain}/entry>
+      <entry name="outbound_proxy">sip:${data.domain}</entry>
       <entry name="register_enabled">1</entry>
       <entry name="expires">3600</entry>
     </section>
