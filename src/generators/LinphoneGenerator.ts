@@ -28,7 +28,8 @@ export class LinphoneGenerator implements IGenerator {
     </section>
     <section name="auth_info_0" overwrite="true">
       <entry name="username" overwrite="true">${data.username}</entry>
-      <entry name="ha1" overwrite="true">${data.password}</entry>
+      <entry name="ha1" overwrite="true">${ha1}</entry>
+      <entry name="passwd" overwrite="true">${data.password}</entry>
       <entry name="realm" overwrite="true">${data.domain}</entry>
       <entry name="domain" overwrite="true">${data.domain}</entry>
       <entry name="algorithm" overwrite="true">MD5</entry>
