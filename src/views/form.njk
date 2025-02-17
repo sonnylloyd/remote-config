@@ -1,34 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Submit Configuration</title>
-  </head>
-  <body>
-    <h1>Submit Configuration</h1>
+{% extends "layout.njk" %}
 
-    <!-- Generator Selection -->
-    <label for="generator">Select Generator:</label>
-    <select id="generator" name="generator">
-      {% for generator in generators %}
-      <option value="{{ generator }}" {% if loop.first %}selected{% endif %}>
-        {{ generator.charAt(0) | upper }}{{ generator | slice(1) }}
-      </option>
-      {% endfor %}
-    </select>
+{% block title %}Submit Configuration{% endblock %}
+
+{% block body_class %}bg-light{% endblock %}
+
+{% block content %}
+
+<div class="container pb-5">
+
+      <!-- Generator Selection -->
+      <div class="bg-white p-3 mb-4 border rounded shadow-sm">
+        <label for="generator" class="form-label fw-semibold">Select Configuration Generator</label>
+        <select id="generator" name="generator" class="form-select">
+          {% for generator in generators %}
+            <option value="{{ generator }}" {% if loop.first %}selected{% endif %}>
+              {{ generator }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+
+
+
+    <div class="bg-white p-3 mb-4 border rounded shadow-sm">
 
     <!-- Dynamic Form Fields -->
-    <form id="config-form">
-      <div id="dynamic-fields"></div>
-      <button type="submit">Submit</button>
+    <form id="config-form" class="needs-validation" novalidate>
+      <div id="dynamic-fields" class="mb-3"></div>
+      <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 
     <!-- Display QR URL after form submission -->
-    <div id="qr-url-section" style="display: none;">
-      <h3>Configuration QR URL:</h3>
-      <p id="qr-url"></p>
-      <button onclick="copyToClipboard()">Copy URL</button>
+      <div id="qr-url-section" class="mt-4 d-none">
+        <h3>Configuration QR URL:</h3>
+        <p id="qr-url" class="text-break"></p>
+        <button class="btn btn-outline-secondary" onclick="copyToClipboard()">Copy URL</button>
+      </div>
+    </div>
+
     </div>
 
     <script>
@@ -48,15 +58,21 @@
               formContainer.innerHTML = ''; // Clear previous fields
 
               fields.forEach((field) => {
+                const formGroup = document.createElement('div');
+                formGroup.classList.add('mb-3');
+
                 const label = document.createElement('label');
-                label.textContent = field.label;
+                label.classList.add('form-label');
                 label.setAttribute('for', field.name);
+                label.textContent = field.label;
 
                 let input;
 
                 if (field.type === 'select') {
                   input = document.createElement('select');
+                  input.classList.add('form-select');
                   input.name = field.name;
+                  input.required = field.required || false;
 
                   field.options.forEach((option) => {
                     const optionElement = document.createElement('option');
@@ -64,8 +80,14 @@
                     optionElement.textContent = option.label;
                     input.appendChild(optionElement);
                   });
+
+                  if (field.defaultValue) {
+                    input.value = field.defaultValue;
+                  }
+
                 } else {
                   input = document.createElement('input');
+                  input.classList.add('form-control');
                   input.type = field.type || 'text';
                   input.name = field.name;
                   input.required = field.required || false;
@@ -74,21 +96,26 @@
                   if (field.defaultValue) {
                     input.value = field.defaultValue;
                   }
+
+                  if (field.hint) {
+                    input.setAttribute('aria-describedby', `${field.name}-hint`);
+                  }
                 }
+
+                formGroup.appendChild(label);
+                formGroup.appendChild(input);
 
                 // Add hint text below the field if it exists
                 if (field.hint) {
-                  const hintText = document.createElement('small');
-                  hintText.textContent = field.hint;
-                  hintText.style.display = 'block'; // Make sure the hint is on a new line
-                  hintText.style.color = 'gray';
-                  hintText.style.fontSize = '0.9em';
-                  formContainer.appendChild(hintText);
+                  const hint = document.createElement('div');
+                  hint.classList.add('form-text');
+                  hint.id = `${field.name}-hint`;
+                  hint.textContent = field.hint;
+                  formGroup.appendChild(hint);
                 }
 
                 // Append the field label and input to the form container
-                formContainer.appendChild(label);
-                formContainer.appendChild(input);
+                formContainer.appendChild(formGroup);
               });
             });
         }
@@ -127,24 +154,19 @@
             .then((result) => {
               // Show the QR URL section and populate the URL
               if (result.qr) {
-                qrUrlElement.textContent = result.qr; // Set the QR URL in the element
-                qrUrlSection.style.display = 'block'; // Make the section visible
+                qrUrlElement.textContent = result.qr;
+                qrUrlSection.classList.remove('d-none');
               }
             });
         });
 
-        // Function to copy the QR URL to the clipboard
+        // Copy QR URL to clipboard
         function copyToClipboard() {
           const qrUrl = qrUrlElement.textContent;
-          const textArea = document.createElement('textarea');
-          textArea.value = qrUrl;
-          document.body.appendChild(textArea);
-          textArea.select();
-          document.execCommand('copy');
-          document.body.removeChild(textArea);
-          alert('QR URL copied to clipboard!');
+          navigator.clipboard.writeText(qrUrl).then(() => {
+            alert('QR URL copied to clipboard!');
+          });
         }
       });
     </script>
-  </body>
-</html>
+{% endblock %}

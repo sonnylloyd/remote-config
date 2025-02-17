@@ -1,9 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code</title>
+{% extends "layout.njk" %}
+
+{% block title %}Get Config{% endblock %}
+
+{% block body_class %}bg-light{% endblock %}
+
+{% block head %}
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -24,8 +25,10 @@
             word-break: break-all;
         }
     </style>
-</head>
-<body>
+{% endblock %}
+
+{% block content %}
+
     <div class="container">
         <h1>Scan QR Code</h1>
         <p>Scan this QR code with your VoIP application to automatically configure your settings.</p>
@@ -43,5 +46,5 @@
             </a>
         </p>
     </div>
-</body>
-</html>
+
+{% endblock %}

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Remote Config{% endblock %}</title>
+    <link rel="stylesheet" href="/css/app.css" />
+    <link rel="icon" type="image/png" href="/images/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/images/favicon/favicon.svg" />
+    <link rel="shortcut icon" href="/images/favicon/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png" />
+    <link rel="manifest" href="/images/favicon/site.webmanifest" />
+    {% block head %}{% endblock %}
+  </head>
+  <body class='{% block body_class %}{% endblock %}'>
+    <div class="container py-5">
+        <div class="text-center">
+            <img src="/images/logo.svg" alt="App Logo" class="img-fluid" style="max-height: 200px;" />
+        </div>
+    </div>
+    <main>
+      {% block content %}{% endblock %}
+    </main>
+    <footer class="text-center">
+      <p>Powered by Remote Config</p>
+    </footer>
+  </body>
+</html>
