@@ -5,26 +5,21 @@
 {% block body_class %}bg-light{% endblock %}
 
 {% block content %}
-
 <div class="container pb-5">
 
-      <!-- Generator Selection -->
-      <div class="bg-white p-3 mb-4 border rounded shadow-sm">
-        <label for="generator" class="form-label fw-semibold">Select Configuration Generator</label>
-        <select id="generator" name="generator" class="form-select">
-          {% for generator in generators %}
-            <option value="{{ generator }}" {% if loop.first %}selected{% endif %}>
-              {{ generator }}
-            </option>
-          {% endfor %}
-        </select>
-      </div>
+  <!-- Generator Selection -->
+  <div class="bg-white p-3 mb-4 border rounded shadow-sm">
+    <label for="generator" class="form-label fw-semibold">Select Configuration Generator</label>
+    <select id="generator" name="generator" class="form-select">
+      {% for generator in generators %}
+        <option value="{{ generator }}" {% if loop.first %}selected{% endif %}>
+          {{ generator }}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
 
-
-
-
-    <div class="bg-white p-3 mb-4 border rounded shadow-sm">
-
+  <div class="bg-white p-3 mb-4 border rounded shadow-sm">
     <!-- Dynamic Form Fields -->
     <form id="config-form" class="needs-validation" novalidate>
       <div id="dynamic-fields" class="mb-3"></div>
@@ -32,141 +27,160 @@
     </form>
 
     <!-- Display QR URL after form submission -->
-      <div id="qr-url-section" class="mt-4 d-none">
-        <h3>Configuration QR URL:</h3>
-        <p id="qr-url" class="text-break"></p>
-        <button class="btn btn-outline-secondary" onclick="copyToClipboard()">Copy URL</button>
-      </div>
+    <div id="qr-url-section" class="mt-4 d-none">
+      <h3>Configuration QR URL:</h3>
+      <p id="qr-url" class="text-break"></p>
+      <button class="btn btn-outline-secondary" onclick="copyToClipboard()">Copy URL</button>
     </div>
+  </div>
+</div>
 
-    </div>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const generatorSelect = document.getElementById('generator');
+    const formContainer = document.getElementById('dynamic-fields');
+    const form = document.getElementById('config-form');
+    const qrUrlSection = document.getElementById('qr-url-section');
+    const qrUrlElement = document.getElementById('qr-url');
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        const generatorSelect = document.getElementById('generator');
-        const formContainer = document.getElementById('dynamic-fields');
-        const form = document.getElementById('config-form');
-        const qrUrlSection = document.getElementById('qr-url-section');
-        const qrUrlElement = document.getElementById('qr-url');
+    function loadFormFields(generator) {
+      const fieldsUrl = '{{ route.FORM_FIELDS }}'.replace(':generator', generator);
 
-        function loadFormFields(generator) {
-          const fieldsUrl = '{{ route.FORM_FIELDS }}'.replace(':generator', generator);
+      fetch(fieldsUrl)
+        .then((response) => response.json())
+        .then((fields) => {
+          formContainer.innerHTML = ''; // Clear previous fields
 
-          fetch(fieldsUrl)
-            .then((response) => response.json())
-            .then((fields) => {
-              formContainer.innerHTML = ''; // Clear previous fields
+          fields.forEach((field) => {
+            const formGroup = document.createElement('div');
+            formGroup.classList.add('mb-3');
+            formGroup.setAttribute('data-field', field.name);
 
-              fields.forEach((field) => {
-                const formGroup = document.createElement('div');
-                formGroup.classList.add('mb-3');
+            const label = document.createElement('label');
+            label.classList.add('form-label');
+            label.setAttribute('for', field.name);
+            label.textContent = field.label;
 
-                const label = document.createElement('label');
-                label.classList.add('form-label');
-                label.setAttribute('for', field.name);
-                label.textContent = field.label;
+            let input;
 
-                let input;
+            if (field.type === 'select') {
+              input = document.createElement('select');
+              input.classList.add('form-select');
+              input.name = field.name;
+              input.required = field.required || false;
 
-                if (field.type === 'select') {
-                  input = document.createElement('select');
-                  input.classList.add('form-select');
-                  input.name = field.name;
-                  input.required = field.required || false;
-
-                  field.options.forEach((option) => {
-                    const optionElement = document.createElement('option');
-                    optionElement.value = option.value;
-                    optionElement.textContent = option.label;
-                    input.appendChild(optionElement);
-                  });
-
-                  if (field.defaultValue) {
-                    input.value = field.defaultValue;
-                  }
-
-                } else {
-                  input = document.createElement('input');
-                  input.classList.add('form-control');
-                  input.type = field.type || 'text';
-                  input.name = field.name;
-                  input.required = field.required || false;
-
-                  // Set default value if available
-                  if (field.defaultValue) {
-                    input.value = field.defaultValue;
-                  }
-
-                  if (field.hint) {
-                    input.setAttribute('aria-describedby', `${field.name}-hint`);
-                  }
-                }
-
-                formGroup.appendChild(label);
-                formGroup.appendChild(input);
-
-                // Add hint text below the field if it exists
-                if (field.hint) {
-                  const hint = document.createElement('div');
-                  hint.classList.add('form-text');
-                  hint.id = `${field.name}-hint`;
-                  hint.textContent = field.hint;
-                  formGroup.appendChild(hint);
-                }
-
-                // Append the field label and input to the form container
-                formContainer.appendChild(formGroup);
+              field.options.forEach((option) => {
+                const optionElement = document.createElement('option');
+                optionElement.value = option.value;
+                optionElement.textContent = option.label;
+                input.appendChild(optionElement);
               });
-            });
-        }
 
-        // Initial form fields for the default selected generator
-        loadFormFields(generatorSelect.value);
+              if (field.defaultValue) {
+                input.value = field.defaultValue;
+              }
+            } else {
+              input = document.createElement('input');
+              input.classList.add('form-control');
+              input.type = field.type || 'text';
+              input.name = field.name;
+              input.required = field.required || false;
 
-        // Handle generator selection change
-        generatorSelect.addEventListener('change', function () {
-          loadFormFields(this.value);
-        });
+              if (field.defaultValue) {
+                input.value = field.defaultValue;
+              }
 
-        // Handle form submission
-        form.addEventListener('submit', function (event) {
-          event.preventDefault();
+              if (field.hint) {
+                input.setAttribute('aria-describedby', `${field.name}-hint`);
+              }
+            }
 
-          const formData = new FormData(form);
-          const data = {};
-          formData.forEach((value, key) => {
-            data[key] = value;
+            formGroup.appendChild(label);
+            formGroup.appendChild(input);
+
+            if (field.hint) {
+              const hint = document.createElement('div');
+              hint.classList.add('form-text');
+              hint.id = `${field.name}-hint`;
+              hint.textContent = field.hint;
+              formGroup.appendChild(hint);
+            }
+
+            // Error container
+            const errorDiv = document.createElement('div');
+            errorDiv.classList.add('invalid-feedback');
+            errorDiv.style.display = 'none';
+            formGroup.appendChild(errorDiv);
+
+            formContainer.appendChild(formGroup);
           });
+        });
+    }
 
-          const submitUrl = '{{ route.SUBMIT_FORM }}'.replace(
-            ':generator',
-            generatorSelect.value
-          );
+    loadFormFields(generatorSelect.value);
 
-          fetch(submitUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-          })
-            .then((response) => response.json())
-            .then((result) => {
-              // Show the QR URL section and populate the URL
-              if (result.qr) {
-                qrUrlElement.textContent = result.qr;
-                qrUrlSection.classList.remove('d-none');
+    generatorSelect.addEventListener('change', function () {
+      loadFormFields(this.value);
+    });
+
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      // Clear previous errors
+      document.querySelectorAll('.is-invalid').forEach((el) => {
+        el.classList.remove('is-invalid');
+      });
+      document.querySelectorAll('.invalid-feedback').forEach((el) => {
+        el.style.display = 'none';
+      });
+
+      const formData = new FormData(form);
+      const data = {};
+      formData.forEach((value, key) => {
+        data[key] = value;
+      });
+
+      const submitUrl = '{{ route.SUBMIT_FORM }}'.replace(
+        ':generator',
+        generatorSelect.value
+      );
+
+      fetch(submitUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+        .then((response) => response.json())
+        .then((result) => {
+          if (result.errors) {
+            // Display field-specific errors
+            Object.keys(result.errors).forEach((key) => {
+              const fieldGroup = formContainer.querySelector(`[data-field="${key}"]`);
+              if (fieldGroup) {
+                const errorDiv = fieldGroup.querySelector('.invalid-feedback');
+                const input = fieldGroup.querySelector('input, select');
+                input.classList.add('is-invalid');
+                errorDiv.textContent = result.errors[key];
+                errorDiv.style.display = 'block';
               }
             });
-        });
+          }
 
-        // Copy QR URL to clipboard
-        function copyToClipboard() {
-          const qrUrl = qrUrlElement.textContent;
-          navigator.clipboard.writeText(qrUrl).then(() => {
-            alert('QR URL copied to clipboard!');
-          });
-        }
+          if (result.qr) {
+            qrUrlElement.textContent = result.qr;
+            qrUrlSection.classList.remove('d-none');
+          }
+        });
+    });
+
+    function copyToClipboard() {
+      const qrUrl = qrUrlElement.textContent;
+      navigator.clipboard.writeText(qrUrl).then(() => {
+        alert('QR URL copied to clipboard!');
       });
-    </script>
+    }
+  });
+</script>
 {% endblock %}

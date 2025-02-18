@@ -39,13 +39,18 @@ export class FormController extends BaseController {
 
       const { ...formData } = req.body;
 
-      // Validate required fields
-      const fields:FormField[] = FormGeneratorService.getFormFields(generatorType);
-      for (const field of fields) { // <---- use "of" instead of "in"
+      const fields: FormField[] = FormGeneratorService.getFormFields(generatorType);
+      const errors: Record<string, string> = {};
+
+      for (const field of fields) {
         if (field.required && !formData[field.name]) {
-          res.status(400).json({ error: `Missing required field: ${field.name}` });
-          return;
+          errors[field.name] = `The ${field.label || field.name} field is required.`;
         }
+      }
+
+      if (Object.keys(errors).length > 0) {
+        res.status(400).json({ errors });
+        return;
       }
 
       // Generate a random key for retrieval
