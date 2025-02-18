@@ -30,7 +30,16 @@
     <div id="qr-url-section" class="mt-4 d-none">
       <h3>Configuration QR URL:</h3>
       <p id="qr-url" class="text-break"></p>
-      <button class="btn btn-outline-secondary" onclick="copyToClipboard()">Copy URL</button>
+      <button type="button" class="btn btn-outline-secondary position-relative mb-3" id="copy-url-btn">
+  Copy URL
+  <span class="visually-hidden">Copied!</span>
+  <span class="copy-check-icon d-none text-success position-absolute top-50 start-100 translate-middle">
+    ✔️
+  </span>
+</button>
+<div id="copy-alert" class="alert alert-success mt-3 d-none" role="alert">
+  URL copied to clipboard!
+</div>
     </div>
   </div>
 </div>
@@ -175,12 +184,54 @@
         });
     });
 
-    function copyToClipboard() {
-      const qrUrl = qrUrlElement.textContent;
-      navigator.clipboard.writeText(qrUrl).then(() => {
-        alert('QR URL copied to clipboard!');
-      });
+    const copyButton = document.getElementById('copy-url-btn');
+    const copyAlert = document.getElementById('copy-alert');
+
+  // Your other code...
+
+  copyButton.addEventListener('click', function () {
+    const qrUrl = qrUrlElement.textContent.trim();
+
+    if (!qrUrl) {
+      showAlert('No URL to copy!', 'danger');
+      return;
     }
+
+    navigator.clipboard
+    .writeText(qrUrl)
+    .then(() => {
+      // Button Tick Animation
+      copyButton.innerHTML = '✔ Copied!';
+      copyButton.classList.remove('btn-outline-secondary');
+      copyButton.classList.add('btn-success');
+
+      // Show Bootstrap Alert
+      showAlert('URL copied to clipboard!', 'success');
+
+      // Reset button after 2 seconds
+      setTimeout(() => {
+        copyButton.innerHTML = 'Copy URL';
+        copyButton.classList.remove('btn-success');
+        copyButton.classList.add('btn-outline-secondary');
+      }, 2000);
+    })
+    .catch((err) => {
+      console.error('Failed to copy URL:', err);
+      showAlert('Failed to copy URL. Please copy manually.', 'danger');
+    });
+  });
+
+
+function showAlert(message, type) {
+  copyAlert.textContent = message;
+  copyAlert.className = `alert alert-${type}`;
+  copyAlert.classList.remove('d-none');
+
+  setTimeout(() => {
+    copyAlert.classList.add('d-none');
+  }, 3000);
+}
+
   });
 </script>
 {% endblock %}

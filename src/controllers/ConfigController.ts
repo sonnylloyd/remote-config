@@ -24,7 +24,7 @@ export class ConfigController extends BaseController {
       }
 
       // Delete the key from Redis to prevent reuse
-      //await this.storage.delete(key);
+      await this.storage.delete(key);
 
       const { data, generatorType } = JSON.parse(storedData);
 
