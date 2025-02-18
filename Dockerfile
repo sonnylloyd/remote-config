@@ -28,6 +28,7 @@ RUN npm install --only=production
 
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/src/views ./dist/views
+COPY --from=builder /app/public ./dist/public
 
 # Expose the application port
 EXPOSE 3000
