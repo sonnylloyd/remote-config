@@ -1,8 +1,8 @@
-# SIP Remote Config Generator
+# Remote Config Generator
 
 ## Overview
 
-The **SIP Remote Config Generator** is a web application that allows users to generate configuration files for SIP (Session Initiation Protocol) devices. Users can select different **SIP generators** (such as Linphone) and configure settings such as username, password, domain, transport protocol, and more. The configuration is then stored and made available for download via a QR code or a direct URL.
+The **Remote Config Generator** is a web application that allows users to generate configuration files for SIP (Session Initiation Protocol) devices. Users can select different **generators** (such as Linphone) and configure settings such as username, password, domain, transport protocol, and more. The configuration is then stored and made available for download via a QR code or a direct URL.
 
 ## Features
 
