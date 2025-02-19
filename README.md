@@ -1,12 +1,14 @@
-# SIP Remote Config Generator
+![Logo](public/images/logo.svg)
+
+# Remote Config Generator
 
 ## Overview
 
-The **SIP Remote Config Generator** is a web application that allows users to generate configuration files for SIP (Session Initiation Protocol) devices. Users can select different **SIP generators** (such as Linphone) and configure settings such as username, password, domain, transport protocol, and more. The configuration is then stored and made available for download via a QR code or a direct URL.
+The **Remote Config Generator** is a web application that allows users to generate configuration files. Users can select different **generators** (such as Linphone) and configure settings such as username, password, domain, transport protocol, and more. The configuration is then stored and made available for download via a QR code or a direct URL.
 
 ## Features
 
-- **Generator Selection**: Choose from available SIP generators (e.g., Linphone).
+- **Generator Selection**: Choose from available generators (e.g., Linphone).
 - **Dynamic Form**: After selecting a generator, the relevant fields are dynamically loaded for configuration.
 - **Configuration Generation**: Once the form is filled out, the app generates the configuration based on the input.
 - **Storage**: The generated configuration is stored temporarily in Redis.
@@ -33,5 +35,5 @@ The **SIP Remote Config Generator** is a web application that allows users to ge
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/sip-remote-config.git
-   cd sip-remote-config
+   git clone https://github.com/echrom/remote-config.git
+   cd remote-config
