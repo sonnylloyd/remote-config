@@ -1,3 +1,5 @@
+![Logo](public/images/logo.svg)
+
 # Remote Config Generator
 
 ## Overview
