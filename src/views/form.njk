@@ -25,24 +25,28 @@
       <div id="dynamic-fields" class="mb-3"></div>
       <button type="submit" class="btn btn-primary">Submit</button>
     </form>
+  </div>
+
+  <div id="qr-url-container" class="bg-white p-3 mb-4 border rounded shadow-sm d-none">
 
     <!-- Display QR URL after form submission -->
-    <div id="qr-url-section" class="mt-4 d-none">
-      <h3>Configuration QR URL:</h3>
-      <p id="qr-url" class="text-break"></p>
+    <div id="qr-url-section" class="mt-4">
+      <h3>Configuration URL:</h3>
+
+      <input id="qr-url-input" class="form-control my-3" type="text" readonly>
+
       <button type="button" class="btn btn-outline-secondary position-relative mb-3" id="copy-url-btn">
-  Copy URL
-  <span class="visually-hidden">Copied!</span>
-  <span class="copy-check-icon d-none text-success position-absolute top-50 start-100 translate-middle">
-    ✔️
-  </span>
-</button>
-<div id="copy-alert" class="alert alert-success mt-3 d-none" role="alert">
-  URL copied to clipboard!
-</div>
+        Copy URL
+        <span class="visually-hidden">Copied!</span>
+      </button>
+      <div id="copy-alert" class="alert alert-success mt-3 d-none" role="alert">
+        URL copied to clipboard!
+      </div>
     </div>
   </div>
 </div>
+
+
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
@@ -50,7 +54,8 @@
     const formContainer = document.getElementById('dynamic-fields');
     const form = document.getElementById('config-form');
     const qrUrlSection = document.getElementById('qr-url-section');
-    const qrUrlElement = document.getElementById('qr-url');
+    const qrUrlInput = document.getElementById('qr-url-input');
+    const qrUrlContainer = document.getElementById('qr-url-container');
 
     function loadFormFields(generator) {
       const fieldsUrl = '{{ route.FORM_FIELDS }}'.replace(':generator', generator);
@@ -163,6 +168,7 @@
       })
         .then((response) => response.json())
         .then((result) => {
+           qrUrlContainer.classList.add('d-none');
           if (result.errors) {
             // Display field-specific errors
             Object.keys(result.errors).forEach((key) => {
@@ -178,8 +184,10 @@
           }
 
           if (result.qr) {
-            qrUrlElement.textContent = result.qr;
-            qrUrlSection.classList.remove('d-none');
+            qrUrlInput.value = result.qr;
+            qrUrlContainer.classList.remove('d-none');
+            // Scroll into view after showing the QR URL
+            qrUrlContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }
         });
     });
@@ -190,7 +198,7 @@
   // Your other code...
 
   copyButton.addEventListener('click', function () {
-    const qrUrl = qrUrlElement.textContent.trim();
+    const qrUrl = qrUrlInput.value.trim();
 
     if (!qrUrl) {
       showAlert('No URL to copy!', 'danger');
