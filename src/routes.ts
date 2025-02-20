@@ -3,8 +3,10 @@ import { Routes } from "./constants";
 import { BasicAuthMiddleware } from "./middlewares";
 
 export default function (app: Application): void {
-  const { formController, qrCodeController, configController } =
+  const { formController, qrCodeController, configController, IndexController } =
     app.locals.container.cradle;
+
+  app.get(Routes.ROOT, IndexController.index.bind(IndexController));
 
   app.get(
     Routes.FORM,

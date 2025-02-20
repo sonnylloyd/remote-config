@@ -5,6 +5,7 @@ import {
   ConfigController,
   QRCodeController,
   FormController,
+  IndexController
 } from "./controllers";
 import { BasicAuthMiddleware } from "./middlewares";
 import { config } from "./config";
@@ -19,6 +20,7 @@ export class Injection {
 
     this.container.register({
       storage: asClass(RedisStorage).singleton(),
+      IndexController: asClass(IndexController).singleton(),
       configController: asClass(ConfigController).singleton(),
       qrCodeController: asClass(QRCodeController).singleton(),
       formController: asClass(FormController).singleton(),
