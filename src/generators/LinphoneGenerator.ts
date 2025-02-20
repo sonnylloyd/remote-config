@@ -117,4 +117,28 @@ export class LinphoneGenerator implements IGenerator {
       'Content-Disposition': 'attachment; filename=config.xml',
     };
   }
+
+  getInstructions(): Record<string, string[]> {
+    return {
+      'Mobile': [
+        "Install the Linephone app onto your mobile device",
+        "Open the Linphone app",
+        "Open the side menu by ptessing the four lines on the top left corner",
+        "Press assistant",
+        "On the assistant screen press 'Fetch Remote Configuration'",
+        "Press 'QRCode' and scan the qr code above",
+        "Now press 'Fetch and apply'",
+        "Your app should now be connected"
+      ],
+      'Desktop': [
+        "Download the generated configuration file to your computer.",
+        "Open the Linphone desktop application.",
+        "Go to 'Preferences' > 'Accounts'.",
+        "Click 'Add' and select 'Import from configuration file'.",
+        "Choose the downloaded config.xml file.",
+        "Save and verify your registration status."
+      ]
+    };
+  }
+  
 }

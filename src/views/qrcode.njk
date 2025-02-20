@@ -45,6 +45,33 @@
                 <button>Download Configuration</button>
             </a>
         </p>
+
+        <div class="instructions-tabs">
+            <ul class="nav nav-tabs" id="deviceTabs" role="tablist">
+                {% for device, steps in instructions %}
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link {% if loop.first %}active{% endif %}" id="{{ device }}-tab"
+                    data-bs-toggle="tab" data-bs-target="#{{ device }}-content" type="button" role="tab"
+                    aria-controls="{{ device }}-content" aria-selected="{% if loop.first %}true{% else %}false{% endif %}">
+                    {{ device }}
+                    </button>
+                </li>
+                {% endfor %}
+            </ul>
+
+            <div class="tab-content mt-3">
+                {% for device, steps in instructions %}
+                <div class="tab-pane text-start fade {% if loop.first %}show active{% endif %}" id="{{ device }}-content" role="tabpanel" aria-labelledby="{{ device }}-tab">
+                    <ol>
+                    {% for step in steps %}
+                        <li>{{ step }}</li>
+                    {% endfor %}
+                    </ol>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
     </div>
 
 {% endblock %}
