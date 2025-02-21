@@ -10,7 +10,8 @@
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "build:sass": "sass --load-path=node_modules src/assets/styles/app.scss public/css/app.css",
-    "watch:sass": "sass --watch --load-path=node_modules src/assets/styles/app.scss:public/css/app.css"
+    "watch:sass": "sass --watch --load-path=node_modules src/assets/styles/app.scss:public/css/app.css",
+    "build:js": "esbuild src/assets/ts/scripts.ts --bundle --outfile=public/js/scripts.js --target=es6"
   },
   "author": "",
   "license": "ISC",
@@ -29,6 +30,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.20.0",
+    "@types/bootstrap": "^5.2.10",
     "@types/express": "^5.0.0",
     "@types/node": "^22.13.1",
     "@types/nunjucks": "^3.2.6",
@@ -37,6 +39,7 @@
     "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^8.24.0",
     "@typescript-eslint/parser": "^8.24.0",
+    "esbuild": "^0.25.0",
     "eslint": "^9.20.1",
     "globals": "^15.14.0",
     "nodemon": "^3.1.9",
