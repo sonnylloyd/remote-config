@@ -1,8 +1,12 @@
 // src/config/LinphoneConfigGenerator.ts
-import { IGenerator, FormField } from ".";
+import { IGenerator, FormField } from "./..";
 import crypto from "crypto";
 
 export class LinphoneGenerator implements IGenerator {
+  getName(): string {
+    return "linphone";
+  }
+  
   generate(data: Record<string, string>): string {
     const ha1 = crypto.createHash('md5').update(`${data.username}:${data.realm}:${data.password}`).digest('hex');
   
@@ -54,7 +58,6 @@ export class LinphoneGenerator implements IGenerator {
   </config>`;
   }
   
- 
   getFields(): FormField[] {
     return [
       { 
@@ -109,8 +112,6 @@ export class LinphoneGenerator implements IGenerator {
     ];
   }
   
-  
-
   getHeaders(): Record<string, string> {
     return {
       'Content-Type': 'application/xml',

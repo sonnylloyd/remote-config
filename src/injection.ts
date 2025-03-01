@@ -7,7 +7,9 @@ import {
   FormController,
   IndexController
 } from "./controllers";
+import { GeneratorFactory } from './generators';
 import { BasicAuthMiddleware } from "./middlewares";
+import { FormGeneratorService } from './services';
 import { config } from "./config";
 import { Application } from "express";
 
@@ -19,6 +21,8 @@ export class Injection {
     });
 
     this.container.register({
+      generatorFactory: asClass(GeneratorFactory).singleton(),
+      formGeneratorService: asClass(FormGeneratorService).singleton(),
       storage: asClass(RedisStorage).singleton(),
       IndexController: asClass(IndexController).singleton(),
       configController: asClass(ConfigController).singleton(),

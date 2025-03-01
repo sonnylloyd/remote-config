@@ -1,25 +1,29 @@
 import { Request, Response } from "express";
-import { FormGeneratorService } from "./../services";
+import { IFormGeneratorService } from "./../services";
 import { BaseController } from ".";
 import { IStorage } from "./../stores";
-import { GeneratorFactory, FormField } from "./../generators";
+import { FormField, IGeneratorFactory } from "./../generators";
 import { UrlRoute } from "./../utils";
 import { Routes } from "./../constants";
 import crypto from "crypto";
 
 export class FormController extends BaseController {
   private storage: IStorage;
+  private generatorFactory:IGeneratorFactory;
+  private formGeneratorService:IFormGeneratorService;
 
-  constructor(storage: IStorage) {
+  constructor(storage: IStorage, generatorFactory: IGeneratorFactory, formGeneratorService: IFormGeneratorService) {
     super();
     this.storage = storage;
+    this.generatorFactory = generatorFactory;
+    this.formGeneratorService = formGeneratorService;
   }
 
   public async getSupportedGenerators(
     req: Request,
     res: Response,
   ): Promise<void> {
-    const generators = GeneratorFactory.getAvailableGenerators();
+    const generators = this.generatorFactory.getAvailableGenerators();
     res.json(generators);
   }
 
@@ -28,7 +32,7 @@ export class FormController extends BaseController {
     res: Response,
   ): Promise<Response<FormField[]>> {
     const generatorType = req.params.generator || "linphone";
-    const generator = GeneratorFactory.getGenerator(generatorType);
+    const generator = this.generatorFactory.getGenerator(generatorType);
 
     return res.json(generator.getFields());
   }
@@ -39,7 +43,7 @@ export class FormController extends BaseController {
 
       const { ...formData } = req.body;
 
-      const fields: FormField[] = FormGeneratorService.getFormFields(generatorType);
+      const fields: FormField[] = this.formGeneratorService.getFormFields(generatorType);
       const errors: Record<string, string> = {};
 
       for (const field of fields) {
@@ -82,7 +86,7 @@ export class FormController extends BaseController {
   }
 
   public async renderForm(req: Request, res: Response): Promise<void> {
-    const generators = GeneratorFactory.getAvailableGenerators();
+    const generators = this.generatorFactory.getAvailableGenerators();
     res.render("form.njk", {
       title: "Submit Configuration",
       generators: generators

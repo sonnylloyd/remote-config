@@ -1,31 +1,56 @@
 // src/factory/ConfigGeneratorFactory.ts
-import { IGenerator, LinphoneGenerator } from ".";
+import { IGenerator } from ".";
+import fs from "fs";
+import path from "path";
 
-// src/config/GeneratorTypes.ts
-export const GENERATOR_TYPES = {
-  LINPHONE: "linphone",
-} as const;
+export interface IGeneratorFactory {
+  getGenerator(generatorType?: string): IGenerator;
+  getAvailableGenerators(): string[];
+}
 
-export type GeneratorType =
-  (typeof GENERATOR_TYPES)[keyof typeof GENERATOR_TYPES];
-
-export class GeneratorFactory {
+export class GeneratorFactory implements IGeneratorFactory {
   // Map of available generators
-  private static generators: Record<GeneratorType, new () => IGenerator> = {
-    [GENERATOR_TYPES.LINPHONE]: LinphoneGenerator,
-  };
+  private generators: Record<string, new () => IGenerator> = {};
 
-  public static getGenerator(generatorType?: string): IGenerator {
-    if (generatorType && generatorType in this.generators) {
-      return new this.generators[generatorType as GeneratorType]();
-    }
-    console.warn(
-      `Unknown generator type "${generatorType}", defaulting to "${GENERATOR_TYPES.LINPHONE}".`,
-    );
-    return new LinphoneGenerator();
+  constructor() {
+    this.loadGenerators();
   }
 
-  public static getAvailableGenerators(): string[] {
+  public async loadGenerators(): Promise<void> {
+    // Determine the correct path dynamically
+    const factoryDir = path.dirname(__filename); // Get the directory of this file
+    const generatorsPath = path.join(factoryDir, "generators"); // Look for a 'generators' folder next to this file
+
+    if (!fs.existsSync(generatorsPath)) {
+      console.warn(`Generator directory not found: ${generatorsPath}`);
+      return;
+    }
+
+    const files = fs.readdirSync(generatorsPath); // Use only .js after compilation
+    for (const file of files) {
+      const module = await import(path.join(generatorsPath, file));
+
+      for (const key in module) {
+        const GeneratorClass = module[key];
+        if (typeof GeneratorClass === "function") {
+          const instance = new GeneratorClass();
+          if (typeof instance.getName === "function") {
+            this.generators[instance.getName()] = GeneratorClass;
+          }
+        }
+      }
+    }
+  }
+
+  public getGenerator(generatorType?: string): IGenerator {
+    if (generatorType && this.generators[generatorType]) {
+      return new this.generators[generatorType]();
+    }
+    console.warn(`Unknown generator type "${generatorType}", defaulting to the first available generator.`);
+    return new this.generators[Object.keys(this.generators)[0]]();
+  }
+
+  public getAvailableGenerators(): string[] {
     return Object.keys(this.generators);
   }
 }

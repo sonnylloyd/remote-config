@@ -1,14 +1,16 @@
 import { Request, Response } from "express";
 import { BaseController } from ".";
 import { IStorage } from "./../stores";
-import { GeneratorFactory } from "./../generators";
+import { IGeneratorFactory } from "./../generators";
 
 export class ConfigController extends BaseController {
   private storage: IStorage;
+  private generatorFactory:IGeneratorFactory; 
 
-  constructor(storage: IStorage) {
+  constructor(storage: IStorage, generatorFactory: IGeneratorFactory) {
     super();
     this.storage = storage;
+    this.generatorFactory = generatorFactory;
   }
 
   async getConfig(req: Request, res: Response): Promise<void> {
@@ -28,7 +30,7 @@ export class ConfigController extends BaseController {
 
       const { data, generatorType } = JSON.parse(storedData);
 
-      const generator = GeneratorFactory.getGenerator(generatorType);
+      const generator = this.generatorFactory.getGenerator(generatorType);
 
       if (!generator) {
         res.status(500).json({ error: `Generator '${generatorType}' not found` });
