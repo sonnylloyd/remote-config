@@ -57,79 +57,89 @@
     const qrUrlInput = document.getElementById('qr-url-input');
     const qrUrlContainer = document.getElementById('qr-url-container');
 
-    function loadFormFields(generator) {
-      const fieldsUrl = '{{ route.FORM_FIELDS }}'.replace(':generator', generator);
+     function loadFormFields(generator) {
+    const fieldsUrl = '{{ route.FORM_FIELDS }}'.replace(':generator', generator);
 
-      fetch(fieldsUrl)
-        .then((response) => response.json())
-        .then((fields) => {
-          formContainer.innerHTML = ''; // Clear previous fields
+    fetch(fieldsUrl)
+      .then((response) => response.json())
+      .then((fields) => {
+        formContainer.innerHTML = ''; // Clear previous fields
 
-          fields.forEach((field) => {
-            const formGroup = document.createElement('div');
-            formGroup.classList.add('mb-3');
-            formGroup.setAttribute('data-field', field.name);
+        fields.forEach((field) => {
+          const formGroup = document.createElement('div');
+          formGroup.classList.add('mb-3');
+          formGroup.setAttribute('data-field', field.name);
 
-            const label = document.createElement('label');
-            label.classList.add('form-label');
-            label.setAttribute('for', field.name);
-            label.textContent = field.label;
+          const label = document.createElement('label');
+          label.classList.add('form-label');
+          label.setAttribute('for', field.name);
+          label.textContent = field.label;
 
-            let input;
+          let input;
 
-            if (field.type === 'select') {
-              input = document.createElement('select');
-              input.classList.add('form-select');
-              input.name = field.name;
-              input.required = field.required || false;
+          if (field.type === 'select') {
+            input = document.createElement('select');
+            input.classList.add('form-select');
+            input.name = field.name;
+            input.required = field.required || false;
 
-              field.options.forEach((option) => {
-                const optionElement = document.createElement('option');
-                optionElement.value = option.value;
-                optionElement.textContent = option.label;
-                input.appendChild(optionElement);
-              });
+            field.options.forEach((option) => {
+              const optionElement = document.createElement('option');
+              optionElement.value = option.value;
+              optionElement.textContent = option.label;
+              input.appendChild(optionElement);
+            });
 
-              if (field.defaultValue) {
-                input.value = field.defaultValue;
-              }
-            } else {
-              input = document.createElement('input');
-              input.classList.add('form-control');
-              input.type = field.type || 'text';
-              input.name = field.name;
-              input.required = field.required || false;
-
-              if (field.defaultValue) {
-                input.value = field.defaultValue;
-              }
-
-              if (field.hint) {
-                input.setAttribute('aria-describedby', `${field.name}-hint`);
-              }
+            if (field.defaultValue) {
+              input.value = field.defaultValue;
             }
+          } else if (field.type === 'textarea') {
+            input = document.createElement('textarea');
+            input.classList.add('form-control');
+            input.name = field.name;
+            input.required = field.required || false;
+            input.rows = 4; // Default rows for better visibility
 
-            formGroup.appendChild(label);
-            formGroup.appendChild(input);
+            if (field.defaultValue) {
+              input.value = field.defaultValue;
+            }
+          } else {
+            input = document.createElement('input');
+            input.classList.add('form-control');
+            input.type = field.type || 'text';
+            input.name = field.name;
+            input.required = field.required || false;
+
+            if (field.defaultValue) {
+              input.value = field.defaultValue;
+            }
 
             if (field.hint) {
-              const hint = document.createElement('div');
-              hint.classList.add('form-text');
-              hint.id = `${field.name}-hint`;
-              hint.textContent = field.hint;
-              formGroup.appendChild(hint);
+              input.setAttribute('aria-describedby', `${field.name}-hint`);
             }
+          }
 
-            // Error container
-            const errorDiv = document.createElement('div');
-            errorDiv.classList.add('invalid-feedback');
-            errorDiv.style.display = 'none';
-            formGroup.appendChild(errorDiv);
+          formGroup.appendChild(label);
+          formGroup.appendChild(input);
 
-            formContainer.appendChild(formGroup);
-          });
+          if (field.hint) {
+            const hint = document.createElement('div');
+            hint.classList.add('form-text');
+            hint.id = `${field.name}-hint`;
+            hint.textContent = field.hint;
+            formGroup.appendChild(hint);
+          }
+
+          // Error container
+          const errorDiv = document.createElement('div');
+          errorDiv.classList.add('invalid-feedback');
+          errorDiv.style.display = 'none';
+          formGroup.appendChild(errorDiv);
+
+          formContainer.appendChild(formGroup);
         });
-    }
+      });
+  }
 
     loadFormFields(generatorSelect.value);
 

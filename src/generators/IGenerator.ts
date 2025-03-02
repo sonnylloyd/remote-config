@@ -9,7 +9,24 @@ export interface IGenerator {
 export type FormField = {
   name: string;
   label: string;
-  type: "text" | "password" | "select";
+  type:
+    | "text"
+    | "password"
+    | "select"
+    | "number"
+    | "textarea"
+    | "email"
+    | "url"
+    | "tel"
+    | "date"
+    | "datetime-local"
+    | "time"
+    | "month"
+    | "week"
+    | "color"
+    | "range"
+    | "checkbox"
+    | "radio";
   required: boolean;
   options?: { value: string; label: string }[];
   defaultValue?: string;
