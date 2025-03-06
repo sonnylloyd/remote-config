@@ -1,5 +1,4 @@
-![Logo](public/images/logo.svg){ width=200 height=200 }
-
+<img src="public/images/logo.svg" alt="Logo" width="200" height="200" style='margin-bottom:3rem'>
 
 # Remote Config Generator
 
