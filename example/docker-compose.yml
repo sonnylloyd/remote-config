@@ -1,0 +1,41 @@
+services:
+  remote-config:
+    image: echrom/sip-remote-config:latest
+    container_name: remote-config
+    env_file:
+      - .env-sample
+    environment:
+      - REDIS_HOST=redis-remote-config
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD} # Use password from .env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.remote-config.rule=Host(`remote-config.example.com`)"
+      - "traefik.http.services.emote-config.loadbalancer.server.port=3000"
+    networks:
+      - traefik-net
+    depends_on:
+      - redis-remote-config
+    expose:
+      - "3000" # Optionally expose the port for direct access
+    restart: unless-stopped
+    pull_policy: always  # Ensure the image is always pulled before starting
+
+  redis-remote-config:
+    image: redis:alpine
+    container_name: remote-config-redis
+    restart: always
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}  # Set the Redis password from the .env file
+    volumes:
+      - redis-data:/data
+    networks:
+      - traefik-net
+
+volumes:
+  redis-data:
+    driver: local
+
+networks:
+  traefik-net:
+    external: true
