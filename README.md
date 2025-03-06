@@ -41,8 +41,8 @@ Before running the project locally, ensure you have the following installed:
 
 ### **1 Clone the Repository**
 ```sh
-git clone https://github.com/your-username/your-project.git
-cd your-project
+git clone https://github.com/sonnylloyd/remote-config.git
+cd remote-config
 ```
 
 ---
