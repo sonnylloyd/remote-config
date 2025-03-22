@@ -1,6 +1,6 @@
 services:
   remote-config:
-    image: echrom/sip-remote-config:latest
+    image: echrom/remote-config:latest
     container_name: remote-config
     env_file:
       - .env-sample
